@@ -2,6 +2,7 @@
     <string name="app_name">MyNotes</string>
 
     <!-- Strings related to login -->
+    <string name="search_hint">"search by anything"</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
     <string name="action_sign_in">Sign in or register</string>
@@ -107,4 +108,5 @@
     </string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_create_note">CreateNote</string>
+    <string name="title_activity_note_view">NoteView</string>
 </resources>
