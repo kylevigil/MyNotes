@@ -1,9 +1,10 @@
 package cpe365.mynotes;
 
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
@@ -153,7 +154,7 @@ public class LoginActivity extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             HttpURLConnection urlConnection = null;
             try {
-                URL url = new URL("http://52.38.152.182:8888");
+                URL url = new URL(getString(R.string.server));
                 urlConnection = (HttpURLConnection) url.openConnection();
 
                 Map<String,Object> postParams = new LinkedHashMap<>();
@@ -184,44 +185,111 @@ public class LoginActivity extends AppCompatActivity {
 
                 JSONObject jObj = new JSONObject(json);
                 response = jObj.getString("status");
-                return !response.equals("1");
 
+                urlConnection.disconnect();
+                return true;
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
 
             if (urlConnection != null) urlConnection.disconnect();
 
-            // TODO: register the new account here.
             return false;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            Context context = getApplicationContext();
-            CharSequence text = response;
-            int duration = Toast.LENGTH_LONG;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
-
             mAuthTask = null;
 
-            if (success) {
+            if (response.equals("0")) {
                 finish();
                 Intent notes = new Intent(LoginActivity.this, NotesList.class);
                 notes.putExtra("username", mUsername);
                 notes.putExtra("passHash", mHash);
                 LoginActivity.this.startActivity(notes);
-            } else {
+            } else if (response.equals("2")) {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
+            } else {
+                AlertDialog.Builder addUserDialog = new AlertDialog.Builder(LoginActivity.this);
+                addUserDialog.setMessage(R.string.dialog_add_user)
+                        .setPositiveButton(R.string.add_user, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                try {
+                                    AddUserTask addUser = new AddUserTask(mUsername, mHash);
+                                    addUser.execute((Void) null);
+                                } catch (Exception e) {
+                                    Toast toast = Toast.makeText(LoginActivity.this, R.string.fail, Toast.LENGTH_LONG);
+                                    toast.show();
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        });
+                addUserDialog.show();
             }
         }
 
         @Override
         protected void onCancelled() {
             mAuthTask = null;
+        }
+    }
+
+    public class AddUserTask extends AsyncTask<Void, Void, Boolean> {
+        private final String mUsername;
+        private final String mHash;
+
+        AddUserTask(String username, String hash) throws Exception {
+            mUsername = username;
+            mHash = hash;
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            HttpURLConnection urlConnection = null;
+            try {
+                URL url = new URL(getString(R.string.server));
+                urlConnection = (HttpURLConnection) url.openConnection();
+
+                Map<String,Object> postParams = new LinkedHashMap<>();
+                postParams.put("method","addUser");
+                postParams.put("username",mUsername);
+                postParams.put("passHash",mHash);
+
+                StringBuilder postData = new StringBuilder();
+
+                for (Map.Entry<String,Object> param : postParams.entrySet()) {
+                    if (postData.length() != 0) postData.append('&');
+                    postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                    postData.append('=');
+                    postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+                }
+                byte[] postDataBytes = postData.toString().getBytes("UTF-8");
+
+                HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+                conn.getOutputStream().write(postDataBytes);
+
+                urlConnection.disconnect();
+                return true;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (urlConnection != null) urlConnection.disconnect();
+
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(final Boolean success) {
+            Toast toast = Toast.makeText(LoginActivity.this, R.string.success, Toast.LENGTH_SHORT);
+            toast.show();
         }
     }
 }

@@ -10,7 +10,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -52,9 +51,10 @@ public class NotesList extends AppCompatActivity {
 
 
     public class RetrieveNotesList extends AsyncTask<Void, Void, Boolean> {
-        public final String mUsername;
-        public final String mHash;
-        public JSONObject notesList;
+        private final String mUsername;
+        private final String mHash;
+        private JSONObject notesList;
+        private String response;
 
         public RetrieveNotesList(String username, String passHash) {
             mUsername = username;
@@ -65,7 +65,7 @@ public class NotesList extends AppCompatActivity {
         protected Boolean doInBackground(Void... params) {
             HttpURLConnection urlConnection = null;
             try {
-                URL url = new URL("http://52.38.152.182:8888");
+                URL url = new URL(getString(R.string.server));
                 urlConnection = (HttpURLConnection) url.openConnection();
 
                 Map<String,Object> postParams = new LinkedHashMap<>();
@@ -94,11 +94,10 @@ public class NotesList extends AppCompatActivity {
                 for (int c; (c = in.read()) >= 0;)
                     json += (char)c;
 
-                notesList = new JSONObject(json);
+//                notesList = new JSONObject(json);
+                response = json;
 
             } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
@@ -109,7 +108,7 @@ public class NotesList extends AppCompatActivity {
 
         protected void onPostExecute(final Boolean success) {
             Context context = getApplicationContext();
-            CharSequence text = notesList.toString();
+            CharSequence text = response;
             int duration = Toast.LENGTH_LONG;
 
             Toast toast = Toast.makeText(context, text, duration);
