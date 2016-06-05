@@ -201,6 +201,11 @@ public class LoginActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
+            if (!success){
+                Toast toast = Toast.makeText(LoginActivity.this, R.string.fail, Toast.LENGTH_LONG);
+                toast.show();
+                return;
+            }
 
             if (response.equals("0")) {
                 Intent notes = new Intent(LoginActivity.this, NotesList.class);
