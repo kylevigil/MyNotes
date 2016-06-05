@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -31,10 +32,10 @@ public class NotesList extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Bundle bundle = getIntent().getExtras();
-        RetrieveNotesList getNotes = new RetrieveNotesList(bundle.getString("username"),
-                bundle.getString("passHash"));
+        String username = PreferenceManager.getDefaultSharedPreferences(NotesList.this).getString("username", "xxxx");
+        String passHash = PreferenceManager.getDefaultSharedPreferences(NotesList.this).getString("passHash", "xxxx");
 
+        RetrieveNotesList getNotes = new RetrieveNotesList(username,passHash);
         getNotes.execute((Void) null);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.createNote);
@@ -108,6 +109,7 @@ public class NotesList extends AppCompatActivity {
 
         protected void onPostExecute(final Boolean success) {
             Context context = getApplicationContext();
+
             CharSequence text = response;
             int duration = Toast.LENGTH_LONG;
 

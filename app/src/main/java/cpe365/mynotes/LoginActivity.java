@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -78,9 +79,9 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
+//        if (mAuthTask != null) {
+//            return;
+//        }
 
         // Reset errors.
         mUsernameView.setError(null);
@@ -202,10 +203,9 @@ public class LoginActivity extends AppCompatActivity {
             mAuthTask = null;
 
             if (response.equals("0")) {
-                finish();
                 Intent notes = new Intent(LoginActivity.this, NotesList.class);
-                notes.putExtra("username", mUsername);
-                notes.putExtra("passHash", mHash);
+                PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit().putString("username", mUsername).apply();
+                PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit().putString("passHash", mHash).apply();
                 LoginActivity.this.startActivity(notes);
             } else if (response.equals("2")) {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -274,6 +274,7 @@ public class LoginActivity extends AppCompatActivity {
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.getOutputStream().write(postDataBytes);
+                conn.getInputStream();
 
                 urlConnection.disconnect();
                 return true;
