@@ -15,8 +15,11 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CreateNote extends AppCompatActivity {
     private EditText mTitle;
@@ -37,13 +40,36 @@ public class CreateNote extends AppCompatActivity {
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    SaveNote save = new SaveNote(mTitle.getText().toString(), mNote.getText().toString());
-                    save.execute((Void) null);
+                    SaveNote saver = new SaveNote(mTitle.getText().toString(), mNote.getText().toString());
+                    saver.execute((Void) null);
                     Intent notes = new Intent(CreateNote.this, NotesList.class);
                     CreateNote.this.startActivity(notes);
                 }
             });
         }
+    }
+
+    public static boolean isGoodTag(String noteText) {
+        String[] words = noteText.split(" ");
+        String pattern = "[^A-z0-9]";
+        Pattern r = Pattern.compile(pattern);
+
+        for (String word : words) {
+            Matcher m = r.matcher(word);
+            if (word.charAt(0) == '#') {
+                word = word.substring(1);
+                if (m.find()) {
+                    word = word.replaceAll("[^A-z0-9]", " ");
+                    String[] parsedTag = word.split(" ");
+                    word = parsedTag[0];
+                    if (word.length() > 64) {
+                        return false;
+                    }
+                }
+
+            }
+        }
+        return true;
     }
 
     public class SaveNote extends AsyncTask<Void, Void, Boolean> {

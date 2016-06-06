@@ -100,7 +100,14 @@ public class LoginActivity extends AppCompatActivity {
             focusView = mPasswordView;
             cancel = true;
         }
-
+        if (username.length() > 32) {
+            mUsernameView.setError("Username must be 32 characters or less");
+            cancel = true;
+        }
+        if (username.contains(" ")) {
+            mUsernameView.setError("Username may not contain spaces");
+            cancel = true;
+        }
         // Check for a valid username.
         if (TextUtils.isEmpty(username)) {
             mUsernameView.setError(getString(R.string.error_field_required));
