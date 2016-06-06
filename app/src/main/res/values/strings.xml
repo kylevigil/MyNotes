@@ -24,4 +24,5 @@
     <string name="fail">Cannot connect to server.</string>
     <string name="success">You can now sign in with your username and password</string>
     <string name="server">http://52.38.152.182:8888</string>
+    <string name="saved">Note saved</string>
 </resources>

@@ -1,6 +1,5 @@
 package cpe365.mynotes;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,10 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -53,7 +49,6 @@ public class CreateNote extends AppCompatActivity {
     public class SaveNote extends AsyncTask<Void, Void, Boolean> {
         private final String mTitle;
         private final String mNote;
-        private String response;
 
         public SaveNote(String title, String note) {
             mTitle = title;
@@ -91,33 +86,27 @@ public class CreateNote extends AppCompatActivity {
                 conn.setRequestMethod("POST");
                 conn.setDoOutput(true);
                 conn.getOutputStream().write(postDataBytes);
+                conn.getInputStream();
 
-                Reader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "UTF-8"));
-
-                String json = "";
-                for (int c; (c = in.read()) >= 0;)
-                    json += (char)c;
-
-//                notesList = new JSONObject(json);
-                response = json;
-
+                urlConnection.disconnect();
+                return true;
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
             if (urlConnection != null) urlConnection.disconnect();
 
-            return true;
+            return false;
         }
 
         protected void onPostExecute(final Boolean success) {
-            Context context = getApplicationContext();
-
-            CharSequence text = response;
-            int duration = Toast.LENGTH_LONG;
-
-            Toast toast = Toast.makeText(context, text, duration);
-            toast.show();
+            if (!success) {
+                Toast toast = Toast.makeText(CreateNote.this, R.string.fail, Toast.LENGTH_LONG);
+                toast.show();
+            } else {
+                Toast toast = Toast.makeText(CreateNote.this, R.string.saved, Toast.LENGTH_LONG);
+                toast.show();
+            }
         }
     }
 
