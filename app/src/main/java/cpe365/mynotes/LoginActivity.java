@@ -211,6 +211,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent notes = new Intent(LoginActivity.this, NotesList.class);
                 PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit().putString("username", mUsername).apply();
                 PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit().putString("passHash", mHash).apply();
+                finish();
                 LoginActivity.this.startActivity(notes);
             } else if (response.equals("2")) {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));

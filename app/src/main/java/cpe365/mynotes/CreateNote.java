@@ -39,6 +39,7 @@ public class CreateNote extends AppCompatActivity {
                 public void onClick(View view) {
                     SaveNote save = new SaveNote(mTitle.getText().toString(), mNote.getText().toString());
                     save.execute((Void) null);
+                    finish();
                     Intent notes = new Intent(CreateNote.this, NotesList.class);
                     CreateNote.this.startActivity(notes);
                 }
@@ -109,5 +110,4 @@ public class CreateNote extends AppCompatActivity {
             }
         }
     }
-
 }

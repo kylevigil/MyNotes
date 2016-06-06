@@ -12,20 +12,28 @@
     tools:context="cpe365.mynotes.NotesList"
     tools:showIn="@layout/activity_notes_list">
 
+    <ListView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/notesList"
+        android:layout_below="@+id/searchView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
     <SearchView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/searchView"
+        android:queryHint="@string/search_hint"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:queryHint="@string/search_hint"/>
-
-    <ListView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/listView"
-        android:layout_below="@+id/searchView"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rowTextView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="16sp" >
+    </TextView>
 </RelativeLayout>
