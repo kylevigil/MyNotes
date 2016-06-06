@@ -24,6 +24,8 @@ public class CreateNote extends AppCompatActivity {
     private boolean modify = false;
     private String noteId = "";
 
+    private SaveNoteTask mSaveNote = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,23 +49,29 @@ public class CreateNote extends AppCompatActivity {
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    SaveNote save = new SaveNote(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
-                    save.execute((Void) null);
-                    finish();
-                    Intent notes = new Intent(CreateNote.this, NotesList.class);
-                    CreateNote.this.startActivity(notes);
+                    if (mTitle.getText().toString().length() == 0) {
+                        mTitle.setError(getString(R.string.no_title));
+                        mTitle.requestFocus();
+                    } else {
+
+                        mSaveNote = new SaveNoteTask(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
+                        mSaveNote.execute((Void) null);
+                        finish();
+                        Intent notes = new Intent(CreateNote.this, NotesList.class);
+                        CreateNote.this.startActivity(notes);
+                    }
                 }
             });
         }
     }
 
-    public class SaveNote extends AsyncTask<Void, Void, Boolean> {
+    public class SaveNoteTask extends AsyncTask<Void, Void, Boolean> {
         private final String mTitle;
         private final String mNote;
         private final boolean mModify;
         private final String mNoteId;
 
-        public SaveNote(String title, String note, boolean modify, String noteId) {
+        public SaveNoteTask(String title, String note, boolean modify, String noteId) {
             mTitle = title;
             mNote = note;
             mModify = modify;
@@ -119,7 +127,9 @@ public class CreateNote extends AppCompatActivity {
             return false;
         }
 
+        @Override
         protected void onPostExecute(final Boolean success) {
+            mSaveNote = null;
             if (!success) {
                 Toast toast = Toast.makeText(CreateNote.this, R.string.fail, Toast.LENGTH_LONG);
                 toast.show();
@@ -127,6 +137,11 @@ public class CreateNote extends AppCompatActivity {
                 Toast toast = Toast.makeText(CreateNote.this, R.string.saved, Toast.LENGTH_LONG);
                 toast.show();
             }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mSaveNote = null;
         }
     }
 }

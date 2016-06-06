@@ -36,6 +36,9 @@ import java.util.Map;
 
 public class NotesList extends AppCompatActivity {
 
+    private RetrieveNotesList mGetNotes = null;
+    private DeleteNote mDelete = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,8 +46,8 @@ public class NotesList extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        RetrieveNotesList getNotes = new RetrieveNotesList();
-        getNotes.execute((Void) null);
+        mGetNotes = new RetrieveNotesList();
+        mGetNotes.execute((Void) null);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.createNote);
         if (fab != null) {
@@ -53,6 +56,7 @@ public class NotesList extends AppCompatActivity {
                 public void onClick(View view) {
                     finish();
                     Intent notes = new Intent(NotesList.this, CreateNote.class);
+                    finish();
                     NotesList.this.startActivity(notes);
                 }
             });
@@ -65,6 +69,7 @@ public class NotesList extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 Intent search = new Intent(NotesList.this, SearchNotes.class);
                 search.putExtra("search", query);
+                finish();
                 startActivity(search);
                 return true;
             }
@@ -121,7 +126,6 @@ public class NotesList extends AppCompatActivity {
 
                 notesList = new JSONArray(json);
                 urlConnection.disconnect();
-
                 return true;
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -133,6 +137,7 @@ public class NotesList extends AppCompatActivity {
         }
 
         protected void onPostExecute(final Boolean success) {
+            mGetNotes = null;
             if (notesList == null) {
                 return;
             }
@@ -174,7 +179,7 @@ public class NotesList extends AppCompatActivity {
                     TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
                     text1.setText(finalTitle[position]);
-                    text2.setText(finalTag[position]);
+                    text2.setText("Tags: " + finalTag[position]);
                     return view;
                 }
             };
@@ -184,6 +189,7 @@ public class NotesList extends AppCompatActivity {
                     public void onItemClick(AdapterView parentView, View childView, int position, long id) {
                         Intent viewNote = new Intent(NotesList.this, NoteView.class);
                         viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
+                        finish();
                         startActivity(viewNote);
                     }
                 });
@@ -196,8 +202,8 @@ public class NotesList extends AppCompatActivity {
                                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         try {
-                                            DeleteNote addUser = new DeleteNote(Integer.toString(finalIds[fPosition]));
-                                            addUser.execute((Void) null);
+                                            mDelete= new DeleteNote(Integer.toString(finalIds[fPosition]));
+                                            mDelete.execute((Void) null);
                                         } catch (Exception e) {
                                             Toast toast = Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG);
                                             toast.show();
@@ -217,6 +223,11 @@ public class NotesList extends AppCompatActivity {
 
                 notes.setAdapter(listAdapter);
             }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mGetNotes = null;
         }
     }
 
@@ -271,6 +282,7 @@ public class NotesList extends AppCompatActivity {
         }
 
         protected void onPostExecute(final Boolean success) {
+            mDelete = null;
             if (!success) {
                 Toast toast = Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG);
                 toast.show();
@@ -279,6 +291,11 @@ public class NotesList extends AppCompatActivity {
                 toast.show();
                 new RetrieveNotesList().execute((Void) null);
             }
+        }
+
+        @Override
+        protected void onCancelled() {
+            mDelete = null;
         }
     }
 }
