@@ -21,6 +21,8 @@ import java.util.Map;
 public class CreateNote extends AppCompatActivity {
     private EditText mTitle;
     private EditText mNote;
+    private boolean modify = false;
+    private String noteId = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,12 +34,20 @@ public class CreateNote extends AppCompatActivity {
         mTitle = (EditText) findViewById(R.id.titleInput);
         mNote = (EditText) findViewById(R.id.contentInput);
 
+
+        if (getIntent().hasExtra("existing")) {
+            modify = true;
+            noteId = getIntent().getStringExtra("noteId");
+            mTitle.append(getIntent().getStringExtra("title"));
+            mNote.append(getIntent().getStringExtra("noteText"));
+        }
+
         FloatingActionButton save = (FloatingActionButton) findViewById(R.id.save);
         if (save != null) {
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    SaveNote save = new SaveNote(mTitle.getText().toString(), mNote.getText().toString());
+                    SaveNote save = new SaveNote(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
                     save.execute((Void) null);
                     finish();
                     Intent notes = new Intent(CreateNote.this, NotesList.class);
@@ -50,10 +60,14 @@ public class CreateNote extends AppCompatActivity {
     public class SaveNote extends AsyncTask<Void, Void, Boolean> {
         private final String mTitle;
         private final String mNote;
+        private final boolean mModify;
+        private final String mNoteId;
 
-        public SaveNote(String title, String note) {
+        public SaveNote(String title, String note, boolean modify, String noteId) {
             mTitle = title;
             mNote = note;
+            mModify = modify;
+            mNoteId = noteId;
         }
 
         @Override
@@ -67,7 +81,12 @@ public class CreateNote extends AppCompatActivity {
 
                 String username = PreferenceManager.getDefaultSharedPreferences(CreateNote.this).getString("username", "xxxx");
                 String passHash = PreferenceManager.getDefaultSharedPreferences(CreateNote.this).getString("passHash", "xxxx");
-                postParams.put("method","addNote");
+                if (mModify) {
+                    postParams.put("method", "modifyNote");
+                    postParams.put("id", mNoteId);
+                } else {
+                    postParams.put("method", "addNote");
+                }
                 postParams.put("username", username);
                 postParams.put("passHash", passHash);
                 postParams.put("title", mTitle);

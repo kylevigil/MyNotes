@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -42,10 +43,7 @@ public class NotesList extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        String username = PreferenceManager.getDefaultSharedPreferences(NotesList.this).getString("username", "xxxx");
-        String passHash = PreferenceManager.getDefaultSharedPreferences(NotesList.this).getString("passHash", "xxxx");
-
-        RetrieveNotesList getNotes = new RetrieveNotesList(username, passHash);
+        RetrieveNotesList getNotes = new RetrieveNotesList();
         getNotes.execute((Void) null);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.createNote);
@@ -59,17 +57,30 @@ public class NotesList extends AppCompatActivity {
                 }
             });
         }
+
+        SearchView searchBar = (SearchView) findViewById(R.id.searchBar);
+        assert searchBar != null;
+        searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Intent search = new Intent(NotesList.this, SearchNotes.class);
+                search.putExtra("search", query);
+                startActivity(search);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
     }
 
 
     public class RetrieveNotesList extends AsyncTask<Void, Void, Boolean> {
-        private final String mUsername;
-        private final String mHash;
         private JSONArray notesList;
 
-        public RetrieveNotesList(String username, String passHash) {
-            mUsername = username;
-            mHash = passHash;
+        public RetrieveNotesList() {
         }
 
         @Override
@@ -79,10 +90,13 @@ public class NotesList extends AppCompatActivity {
                 URL url = new URL(getString(R.string.server));
                 urlConnection = (HttpURLConnection) url.openConnection();
 
+                String username = PreferenceManager.getDefaultSharedPreferences(NotesList.this).getString("username", "xxxx");
+                String hash = PreferenceManager.getDefaultSharedPreferences(NotesList.this).getString("passHash", "xxxx");
+
                 Map<String,Object> postParams = new LinkedHashMap<>();
                 postParams.put("method","getNotes");
-                postParams.put("username", mUsername);
-                postParams.put("passHash", mHash);
+                postParams.put("username", username);
+                postParams.put("passHash", hash);
 
                 StringBuilder postData = new StringBuilder();
 
@@ -106,14 +120,16 @@ public class NotesList extends AppCompatActivity {
                     json += (char)c;
 
                 notesList = new JSONArray(json);
+                urlConnection.disconnect();
 
+                return true;
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
 
             if (urlConnection != null) urlConnection.disconnect();
 
-            return true;
+            return false;
         }
 
         protected void onPostExecute(final Boolean success) {
@@ -182,8 +198,6 @@ public class NotesList extends AppCompatActivity {
                                         try {
                                             DeleteNote addUser = new DeleteNote(Integer.toString(finalIds[fPosition]));
                                             addUser.execute((Void) null);
-                                            finish();
-                                            startActivity(new Intent(NotesList.this, NotesList.class));
                                         } catch (Exception e) {
                                             Toast toast = Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG);
                                             toast.show();
@@ -263,6 +277,7 @@ public class NotesList extends AppCompatActivity {
             } else {
                 Toast toast = Toast.makeText(NotesList.this, R.string.deleted, Toast.LENGTH_LONG);
                 toast.show();
+                new RetrieveNotesList().execute((Void) null);
             }
         }
     }

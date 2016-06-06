@@ -43,6 +43,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="cpe365.mynotes.NotesList" />
         </activity>
+        <activity android:name=".SearchNotes"></activity>
     </application>
 
 </manifest>
