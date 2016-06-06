@@ -43,6 +43,11 @@ public class SearchNotes extends AppCompatActivity {
         new SearchNotesTask(search).execute();
     }
 
+    public void onBackPressed() {
+        finish();
+        this.startActivity(new Intent(SearchNotes.this,NotesList.class));
+    }
+
     public class SearchNotesTask extends AsyncTask<Void, Void, Boolean> {
         private final String mSearch;
         private JSONArray notesList;
@@ -159,6 +164,7 @@ public class SearchNotes extends AppCompatActivity {
                     public void onItemClick(AdapterView parentView, View childView, int position, long id) {
                         Intent viewNote = new Intent(SearchNotes.this, NoteView.class);
                         viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
+                        finish();
                         startActivity(viewNote);
                     }
                 });

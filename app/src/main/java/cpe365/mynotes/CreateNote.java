@@ -1,10 +1,12 @@
 package cpe365.mynotes;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -53,9 +55,10 @@ public class CreateNote extends AppCompatActivity {
                         mTitle.setError(getString(R.string.no_title));
                         mTitle.requestFocus();
                     } else {
-
-                        mSaveNote = new SaveNoteTask(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
-                        mSaveNote.execute((Void) null);
+                        if (mSaveNote == null) {
+                            mSaveNote = new SaveNoteTask(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
+                            mSaveNote.execute((Void) null);
+                        }
                         finish();
                         Intent notes = new Intent(CreateNote.this, NotesList.class);
                         CreateNote.this.startActivity(notes);
@@ -63,6 +66,27 @@ public class CreateNote extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void onBackPressed() {
+        AlertDialog.Builder addUserDialog = new AlertDialog.Builder(CreateNote.this);
+        addUserDialog.setMessage(R.string.confirm_return)
+                .setPositiveButton("Discard", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if (!modify) {
+                            finish();
+                            CreateNote.this.startActivity(new Intent(CreateNote.this, NotesList.class));
+                        } else {
+                            finish();
+                        }
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        addUserDialog.show();
     }
 
     public class SaveNoteTask extends AsyncTask<Void, Void, Boolean> {

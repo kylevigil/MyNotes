@@ -35,8 +35,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class NotesList extends AppCompatActivity {
-
-    private RetrieveNotesList mGetNotes = null;
     private DeleteNote mDelete = null;
 
     @Override
@@ -46,8 +44,8 @@ public class NotesList extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mGetNotes = new RetrieveNotesList();
-        mGetNotes.execute((Void) null);
+        RetrieveNotesList getNotes = new RetrieveNotesList();
+        getNotes.execute((Void) null);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.createNote);
         if (fab != null) {
@@ -81,6 +79,10 @@ public class NotesList extends AppCompatActivity {
         });
     }
 
+    public void onBackPressed() {
+        finish();
+        this.startActivity(new Intent(NotesList.this,LoginActivity.class));
+    }
 
     public class RetrieveNotesList extends AsyncTask<Void, Void, Boolean> {
         private JSONArray notesList;
@@ -137,7 +139,6 @@ public class NotesList extends AppCompatActivity {
         }
 
         protected void onPostExecute(final Boolean success) {
-            mGetNotes = null;
             if (notesList == null) {
                 return;
             }
@@ -202,8 +203,10 @@ public class NotesList extends AppCompatActivity {
                                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         try {
-                                            mDelete= new DeleteNote(Integer.toString(finalIds[fPosition]));
-                                            mDelete.execute((Void) null);
+                                            if (mDelete == null) {
+                                                mDelete = new DeleteNote(Integer.toString(finalIds[fPosition]));
+                                                mDelete.execute((Void) null);
+                                            }
                                         } catch (Exception e) {
                                             Toast toast = Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG);
                                             toast.show();
@@ -223,11 +226,6 @@ public class NotesList extends AppCompatActivity {
 
                 notes.setAdapter(listAdapter);
             }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mGetNotes = null;
         }
     }
 

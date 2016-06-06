@@ -26,6 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 public class NoteView extends AppCompatActivity {
+    private DeleteNote mDelete = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,10 +45,12 @@ public class NoteView extends AppCompatActivity {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                DeleteNote addUser = new DeleteNote(noteId);
-                addUser.execute((Void) null);
-                finish();
-                startActivity(new Intent(NoteView.this, NotesList.class));
+                if (mDelete == null) {
+                    mDelete = new DeleteNote(noteId);
+                    mDelete.execute((Void) null);
+                    finish();
+                    startActivity(new Intent(NoteView.this, NotesList.class));
+                }
             }
         });
         FloatingActionButton edit = (FloatingActionButton) findViewById(R.id.edit);
@@ -61,12 +64,15 @@ public class NoteView extends AppCompatActivity {
                     editNote.putExtra("noteId", noteId);
                     editNote.putExtra("title", getNote.getTitle());
                     editNote.putExtra("noteText", getNote.getNoteText());
-                    finish();
                     startActivity(editNote);
                 }
             }
         });
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
+
+    public void onBackPressed() {
+        finish();
+        this.startActivity(new Intent(NoteView.this,NotesList.class));
     }
 
     public class RetrieveNoteTask extends AsyncTask<Void, Void, Boolean> {
@@ -200,6 +206,7 @@ public class NoteView extends AppCompatActivity {
         }
 
         protected void onPostExecute(final Boolean success) {
+            mDelete = null;
             if (!success) {
                 Toast toast = Toast.makeText(NoteView.this, R.string.fail, Toast.LENGTH_LONG);
                 toast.show();
@@ -208,5 +215,8 @@ public class NoteView extends AppCompatActivity {
                 toast.show();
             }
         }
+
+        @Override
+        protected void onCancelled() { mDelete = null; }
     }
 }
