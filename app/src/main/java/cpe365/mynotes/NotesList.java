@@ -166,7 +166,9 @@ public class NotesList extends AppCompatActivity {
                 notes.setClickable(true);
                 notes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView parentView, View childView, int position, long id) {
-                        Toast.makeText(NotesList.this, Integer.toString(finalIds[position]), Toast.LENGTH_LONG).show();
+                        Intent viewNote = new Intent(NotesList.this, NoteView.class);
+                        viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
+                        startActivity(viewNote);
                     }
                 });
 
@@ -181,7 +183,7 @@ public class NotesList extends AppCompatActivity {
                                             DeleteNote addUser = new DeleteNote(Integer.toString(finalIds[fPosition]));
                                             addUser.execute((Void) null);
                                             finish();
-                                            startActivity(new Intent(getApplicationContext(), NotesList.class));
+                                            startActivity(new Intent(NotesList.this, NotesList.class));
                                         } catch (Exception e) {
                                             Toast toast = Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG);
                                             toast.show();
