@@ -78,6 +78,7 @@ public class CreateNote extends AppCompatActivity {
 
 
     public static boolean isGoodTag(String noteText) {
+        if (noteText.isEmpty()) return true;
         String[] words = noteText.split(" ");
         String pattern = "[^A-z0-9]";
         Pattern r = Pattern.compile(pattern);
