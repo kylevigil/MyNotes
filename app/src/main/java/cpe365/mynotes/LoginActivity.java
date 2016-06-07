@@ -126,8 +126,6 @@ public class LoginActivity extends AppCompatActivity {
             // form field with an error.
             focusView.requestFocus();
         } else {
-            // Show a progress spinner, and kick off a background task to
-            // perform the user login attempt.
             try {
                 mAuthTask = new UserLoginTask(username, password);
             } catch (Exception e) {
@@ -213,8 +211,8 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
             if (!success){
+                mAuthTask = null;
                 Toast toast = Toast.makeText(LoginActivity.this, R.string.fail, Toast.LENGTH_LONG);
                 toast.show();
                 return;
@@ -252,6 +250,7 @@ public class LoginActivity extends AppCompatActivity {
                         });
                 addUserDialog.show();
             }
+            mAuthTask = null;
         }
 
         @Override
