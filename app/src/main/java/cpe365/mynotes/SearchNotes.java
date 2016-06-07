@@ -41,6 +41,7 @@ public class SearchNotes extends AppCompatActivity {
         setTitle("Search: " + search);
 
         new SearchNotesTask(search).execute();
+
     }
 
     public void onBackPressed() {
