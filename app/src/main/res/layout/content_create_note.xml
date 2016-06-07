@@ -43,8 +43,6 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/contentInput"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/titleInput"
             android:hint="@string/content"/>
     </ScrollView>
 

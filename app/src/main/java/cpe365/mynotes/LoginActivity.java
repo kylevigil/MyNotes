@@ -39,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
+    private AddUserTask mAddUser = null;
 
     // UI references.
     private EditText mUsernameView;
@@ -79,9 +80,9 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-//        if (mAuthTask != null) {
-//            return;
-//        }
+        if (mAuthTask != null) {
+            return;
+        }
 
         // Reset errors.
         mUsernameView.setError(null);
@@ -139,7 +140,6 @@ public class LoginActivity extends AppCompatActivity {
      * the user.
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
-
         private final String mUsername;
         private final String mHash;
         private String response;
@@ -147,7 +147,7 @@ public class LoginActivity extends AppCompatActivity {
         UserLoginTask(String username, String password) throws Exception {
             mUsername = username;
 
-            byte[] bytesOfMessage = password.getBytes("UTF-8");
+            byte[] bytesOfMessage = (password + username).getBytes("UTF-8");
             MessageDigest md = MessageDigest.getInstance("MD5");
 
             byte[] bytes = md.digest(bytesOfMessage);
@@ -218,6 +218,7 @@ public class LoginActivity extends AppCompatActivity {
                 Intent notes = new Intent(LoginActivity.this, NotesList.class);
                 PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit().putString("username", mUsername).apply();
                 PreferenceManager.getDefaultSharedPreferences(LoginActivity.this).edit().putString("passHash", mHash).apply();
+                finish();
                 LoginActivity.this.startActivity(notes);
             } else if (response.equals("2")) {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
@@ -228,8 +229,10 @@ public class LoginActivity extends AppCompatActivity {
                         .setPositiveButton(R.string.add_user, new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
                                 try {
-                                    AddUserTask addUser = new AddUserTask(mUsername, mHash);
-                                    addUser.execute((Void) null);
+                                    if (mAddUser == null) {
+                                        mAddUser = new AddUserTask(mUsername, mHash);
+                                        mAddUser.execute((Void) null);
+                                    }
                                 } catch (Exception e) {
                                     Toast toast = Toast.makeText(LoginActivity.this, R.string.fail, Toast.LENGTH_LONG);
                                     toast.show();
@@ -301,8 +304,14 @@ public class LoginActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(final Boolean success) {
+            mAddUser = null;
             Toast toast = Toast.makeText(LoginActivity.this, R.string.success, Toast.LENGTH_SHORT);
             toast.show();
+        }
+
+        @Override
+        protected void onCancelled() {
+            mAddUser = null;
         }
     }
 }
