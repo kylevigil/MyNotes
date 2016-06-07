@@ -20,12 +20,16 @@ import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Java class to set up the page where notes are edited
+ */
 public class CreateNote extends AppCompatActivity {
-    private EditText mTitle;
-    private EditText mNote;
-    private boolean modify = false;
-    private String noteId = "";
+    private EditText mTitle; // keep track of title edit view
+    private EditText mNote; // keep track of note edit view
+    private boolean modify = false; // keep track if this note has already been created or not
+    private String noteId = ""; // if this note is being modified, store id
 
+    // Track if asynch task is running already or not
     private SaveNoteTask mSaveNote = null;
 
     @Override
@@ -38,7 +42,7 @@ public class CreateNote extends AppCompatActivity {
         mTitle = (EditText) findViewById(R.id.titleInput);
         mNote = (EditText) findViewById(R.id.contentInput);
 
-
+        // find if this note is being modified or not
         if (getIntent().hasExtra("existing")) {
             modify = true;
             noteId = getIntent().getStringExtra("noteId");
@@ -46,34 +50,30 @@ public class CreateNote extends AppCompatActivity {
             mNote.append(getIntent().getStringExtra("noteText"));
         }
 
+        // assign action to clicking the FAB save button
         FloatingActionButton save = (FloatingActionButton) findViewById(R.id.save);
-        if (save != null) {
-            save.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-
-                    if (mTitle.getText().toString().length() == 0) {
-                        mTitle.setError(getString(R.string.no_title));
-                        mTitle.requestFocus();
-                    } else if (mTitle.getText().toString().length() > 64) {
-                        mTitle.setError(getString(R.string.long_title));
-                        mTitle.requestFocus();
-                    } else if (!isGoodTag(mNote.getText().toString())) {
-                        mNote.setError(getString(R.string.tag_too_long));
-                        mNote.requestFocus();
-                    }
-                    else {
-                        if (mSaveNote == null) {
-                            mSaveNote = new SaveNoteTask(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
-                            mSaveNote.execute((Void) null);
-                        }
-                    }
+        assert(save != null);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mTitle.getText().toString().length() == 0) {
+                    mTitle.setError(getString(R.string.no_title));
+                    mTitle.requestFocus();
+                } else if (mTitle.getText().toString().length() > 64) {
+                    mTitle.setError(getString(R.string.long_title));
+                    mTitle.requestFocus();
+                } else if (!isGoodTag(mNote.getText().toString())) {
+                    mNote.setError(getString(R.string.tag_too_long));
+                    mNote.requestFocus();
+                } else if (mSaveNote == null) {
+                    mSaveNote = new SaveNoteTask(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
+                    mSaveNote.execute((Void) null);
                 }
-            });
-        }
+            }
+        });
     }
 
-
+    // check all tags in the note text
     public static boolean isGoodTag(String noteText) {
         if (noteText.isEmpty()) return true;
         String[] words = noteText.split(" ");
@@ -86,7 +86,7 @@ public class CreateNote extends AppCompatActivity {
         return true;
     }
 
-
+    // interrupt back pressed and ask user if they want to discard note.
     public void onBackPressed() {
         AlertDialog.Builder addUserDialog = new AlertDialog.Builder(CreateNote.this);
         addUserDialog.setMessage(R.string.confirm_return)
@@ -110,6 +110,9 @@ public class CreateNote extends AppCompatActivity {
         addUserDialog.show();
     }
 
+    /**
+     * Class that runs in the background when the save note button is pressed.
+     */
     public class SaveNoteTask extends AsyncTask<Void, Void, Boolean> {
         private final String mTitle;
         private final String mNote;
@@ -125,6 +128,8 @@ public class CreateNote extends AppCompatActivity {
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            // Connect to api and post correct method with params
+
             HttpURLConnection urlConnection = null;
             try {
                 URL url = new URL(getString(R.string.server));
@@ -182,7 +187,7 @@ public class CreateNote extends AppCompatActivity {
                 Toast toast = Toast.makeText(CreateNote.this, R.string.saved, Toast.LENGTH_LONG);
                 toast.show();
 
-                CreateNote.this.finish();
+                CreateNote.this.finish(); // finish activity and quit
                 Intent notes = new Intent(CreateNote.this, NotesList.class);
                 CreateNote.this.startActivity(notes);
             }

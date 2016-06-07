@@ -37,6 +37,10 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+
+/**
+ * Java class to display and manage main page with list of notes.
+ */
 public class NotesList extends AppCompatActivity {
     private DeleteNote mDelete = null;
 
@@ -51,6 +55,7 @@ public class NotesList extends AppCompatActivity {
         RetrieveNotesList getNotes = new RetrieveNotesList();
         getNotes.execute((Void) null);
 
+        // set task for adding a note
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.createNote);
         if (fab != null) {
             fab.setOnClickListener(new View.OnClickListener() {
@@ -63,6 +68,7 @@ public class NotesList extends AppCompatActivity {
             });
         }
 
+        // Handle search with search view
         SearchView searchBar = (SearchView) findViewById(R.id.searchBar);
         assert searchBar != null;
         searchBar.setOnQueryTextListener(new SearchView.OnQueryTextListener(){
@@ -81,7 +87,7 @@ public class NotesList extends AppCompatActivity {
         });
     }
 
-
+    // override back button pressing and checking if the user wants to logout
     public void onBackPressed() {
         AlertDialog.Builder logout = new AlertDialog.Builder(NotesList.this);
         logout.setMessage(R.string.logout)
@@ -101,6 +107,9 @@ public class NotesList extends AppCompatActivity {
         logout.show();
     }
 
+    /**
+     * Represents an asynchronous note retrieve task used to get note text
+     */
     public class RetrieveNotesList extends AsyncTask<Void, Void, Boolean> {
         private JSONArray notesList;
 
@@ -199,7 +208,7 @@ public class NotesList extends AppCompatActivity {
                     TextView text2 = (TextView) view.findViewById(android.R.id.text2);
 
                     text1.setText(finalTitle[position]);
-                    text2.setText("Tags: " + finalTag[position]);
+                    text2.setText(String.format("Tags: %s", finalTag[position]));
                     return view;
                 }
             };
@@ -266,6 +275,9 @@ public class NotesList extends AppCompatActivity {
         }
     }
 
+    /**
+     * Represents an asynchronous note delete task used to delete note
+     */
     public class DeleteNote extends AsyncTask<Void, Void, Boolean> {
         private final String mId;
 

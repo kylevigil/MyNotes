@@ -4,6 +4,8 @@
     <!-- Strings related to login -->
     <string name="search_hint">"search by anything"</string>
     <string name="logout">Are you sure you want to logout?</string>
+    <string name="short_user">"Username must be 32 characters or less"</string>
+    <string name="contains_spaces">"Username can't contain spaces"</string>
     <string name="long_title">"Title is too long."</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>

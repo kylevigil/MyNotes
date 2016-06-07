@@ -32,6 +32,9 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+/**
+ * Class to represent the page viewed when notes are searched
+ */
 public class SearchNotes extends AppCompatActivity {
 
     @Override
@@ -54,15 +57,18 @@ public class SearchNotes extends AppCompatActivity {
 
     }
 
+    // interrupt back button pressed to direct application where needed
     public void onBackPressed() {
         finish();
         this.startActivity(new Intent(SearchNotes.this,NotesList.class));
     }
 
+    /**
+     * Represents an asynchronous note search task used to search database for notes
+     */
     public class SearchNotesTask extends AsyncTask<Void, Void, Boolean> {
         private final String mSearch;
         private JSONArray notesList = null;
-        private String response;
 
         public SearchNotesTask(String search) {
             mSearch = search;
@@ -104,8 +110,6 @@ public class SearchNotes extends AppCompatActivity {
                 String json = "";
                 for (int c; (c = in.read()) >= 0;)
                     json += (char)c;
-
-                response = json;
 
                 notesList = new JSONArray(json);
 

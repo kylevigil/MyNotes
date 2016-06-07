@@ -101,8 +101,6 @@ public class LoginActivity extends AppCompatActivity {
         boolean cancel = false;
         View focusView = null;
 
-        username = username.trim();
-
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password) && !isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
@@ -110,12 +108,12 @@ public class LoginActivity extends AppCompatActivity {
             cancel = true;
         }
         if (username.length() > 32) {
-            mUsernameView.setError("Username must be 32 characters or less");
+            mUsernameView.setError(getString(R.string.short_user));
             focusView = mUsernameView;
             cancel = true;
         }
         if (username.contains(" ")) {
-            mUsernameView.setError("Username may not contain spaces");
+            mUsernameView.setError(getString(R.string.contains_spaces));
             focusView = mUsernameView;
             cancel = true;
         }
@@ -144,7 +142,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     /**
-     * Represents an asynchronous login/registration task used to authenticate
+     * Represents an asynchronous login task used to authenticate
      * the user.
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
@@ -213,6 +211,10 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
 
+        /**
+         * Represents an asynchronous registration task used to register
+         * the user.
+         */
         @Override
         protected void onPostExecute(final Boolean success) {
             if (!success){
@@ -308,14 +310,16 @@ public class LoginActivity extends AppCompatActivity {
 
             if (urlConnection != null) urlConnection.disconnect();
 
-            return true;
+            return false;
         }
 
         @Override
         protected void onPostExecute(final Boolean success) {
             mAddUser = null;
-            Toast toast = Toast.makeText(LoginActivity.this, R.string.success, Toast.LENGTH_SHORT);
-            toast.show();
+            if (!success)
+                Toast.makeText(LoginActivity.this, R.string.fail, Toast.LENGTH_SHORT).show();
+            else
+                Toast.makeText(LoginActivity.this, R.string.success, Toast.LENGTH_SHORT).show();
         }
 
         @Override
