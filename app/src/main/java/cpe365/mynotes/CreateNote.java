@@ -57,7 +57,12 @@ public class CreateNote extends AppCompatActivity {
                     if (mTitle.getText().toString().length() == 0) {
                         mTitle.setError(getString(R.string.no_title));
                         mTitle.requestFocus();
-                    } else {
+                    }
+                    else if (!isGoodTag(mNote.getText().toString())) {
+                        mNote.setError(getString(R.string.tag_too_long));
+                        mNote.requestFocus();
+                    }
+                    else {
                         if (mSaveNote == null) {
                             mSaveNote = new SaveNoteTask(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
                             mSaveNote.execute((Void) null);
