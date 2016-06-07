@@ -43,6 +43,7 @@ public class NotesList extends AppCompatActivity {
         setContentView(R.layout.activity_notes_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle(R.string.app_name);
 
         RetrieveNotesList getNotes = new RetrieveNotesList();
         getNotes.execute((Void) null);
@@ -65,7 +66,7 @@ public class NotesList extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 Intent search = new Intent(NotesList.this, SearchNotes.class);
-                search.putExtra("search", query);
+                search.putExtra("search", query.trim());
                 startActivity(search);
                 return true;
             }

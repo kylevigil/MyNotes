@@ -35,6 +35,7 @@ public class NoteView extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        setTitle(R.string.app_name);
         final String noteId = getIntent().getStringExtra("noteId");
 
         final RetrieveNoteTask getNote = new RetrieveNoteTask(noteId);
@@ -148,7 +149,6 @@ public class NoteView extends AppCompatActivity {
                 NoteView.this.startActivity(new Intent(NoteView.this,NotesList.class));
                 return;
             }
-            setTitle(mNoteTitle);
             TextView title = (TextView) findViewById(R.id.title);
             TextView noteText = (TextView) findViewById(R.id.noteText);
 

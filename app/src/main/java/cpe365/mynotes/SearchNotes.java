@@ -59,7 +59,7 @@ public class SearchNotes extends AppCompatActivity {
 
     public class SearchNotesTask extends AsyncTask<Void, Void, Boolean> {
         private final String mSearch;
-        private JSONArray notesList;
+        private JSONArray notesList = null;
         private String response;
 
         public SearchNotesTask(String search) {
@@ -119,12 +119,10 @@ public class SearchNotes extends AppCompatActivity {
         }
 
         protected void onPostExecute(final Boolean success) {
-            if (notesList == null) {
-                Toast.makeText(SearchNotes.this, response, Toast.LENGTH_SHORT);
+            if (!success ){
+                Toast.makeText(SearchNotes.this, R.string.fail, Toast.LENGTH_SHORT).show();
                 return;
             }
-
-
 
             ListView notes = (ListView) findViewById(R.id.searchList);
 

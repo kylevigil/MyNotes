@@ -19,8 +19,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CreateNote extends AppCompatActivity {
     private EditText mTitle;
@@ -79,22 +77,10 @@ public class CreateNote extends AppCompatActivity {
     public static boolean isGoodTag(String noteText) {
         if (noteText.isEmpty()) return true;
         String[] words = noteText.split(" ");
-        String pattern = "[^A-z0-9]";
-        Pattern r = Pattern.compile(pattern);
 
         for (String word : words) {
-            Matcher m = r.matcher(word);
-            if (word.charAt(0) == '#') {
-                word = word.substring(1);
-                if (m.find()) {
-                    word = word.replaceAll("[^A-z0-9]", " ");
-                    String[] parsedTag = word.split(" ");
-                    word = parsedTag[0];
-                    if (word.length() > 64) {
-                        return false;
-                    }
-                }
-
+            if (word.charAt(0) == '#' && word.length() > 64) {
+                return false;
             }
         }
         return true;
