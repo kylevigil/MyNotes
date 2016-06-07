@@ -78,9 +78,24 @@ public class NotesList extends AppCompatActivity {
         });
     }
 
+
     public void onBackPressed() {
-        finish();
-        this.startActivity(new Intent(NotesList.this,LoginActivity.class));
+        AlertDialog.Builder logout = new AlertDialog.Builder(NotesList.this);
+        logout.setMessage(R.string.logout)
+                .setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    Intent login = new Intent(NotesList.this,LoginActivity.class);
+                    finish();
+                    login.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    NotesList.this.startActivity(login);
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // User cancelled the dialog
+                    }
+                });
+        logout.show();
     }
 
     public class RetrieveNotesList extends AsyncTask<Void, Void, Boolean> {
@@ -142,6 +157,11 @@ public class NotesList extends AppCompatActivity {
                 return;
             }
 
+            if (!success) {
+                Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG).show();
+                return;
+            }
+
             ListView notes = (ListView) findViewById(R.id.notesList);
 
             String[] titles = new String[notesList.length()];
@@ -189,6 +209,7 @@ public class NotesList extends AppCompatActivity {
                     public void onItemClick(AdapterView parentView, View childView, int position, long id) {
                         Intent viewNote = new Intent(NotesList.this, NoteView.class);
                         viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
+                        viewNote.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         finish();
                         startActivity(viewNote);
                     }

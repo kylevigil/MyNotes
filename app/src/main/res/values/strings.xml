@@ -3,6 +3,7 @@
 
     <!-- Strings related to login -->
     <string name="search_hint">"search by anything"</string>
+    <string name="logout">Are you sure you want to logout?</string>
     <string name="long_title">"Title is too long."</string>
     <string name="prompt_username">Username</string>
     <string name="prompt_password">Password</string>

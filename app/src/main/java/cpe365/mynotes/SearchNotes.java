@@ -171,6 +171,7 @@ public class SearchNotes extends AppCompatActivity {
                     public void onItemClick(AdapterView parentView, View childView, int position, long id) {
                         Intent viewNote = new Intent(SearchNotes.this, NoteView.class);
                         viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
+                        viewNote.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         finish();
                         startActivity(viewNote);
                     }

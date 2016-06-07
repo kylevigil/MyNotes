@@ -79,7 +79,7 @@ public class CreateNote extends AppCompatActivity {
         String[] words = noteText.split(" ");
 
         for (String word : words) {
-            if (word.charAt(0) == '#' && word.length() > 64) {
+            if (word.length() > 1 && word.charAt(0) == '#' && word.length() > 64) {
                 return false;
             }
         }
@@ -94,7 +94,9 @@ public class CreateNote extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int id) {
                         if (!modify) {
                             finish();
-                            CreateNote.this.startActivity(new Intent(CreateNote.this, NotesList.class));
+                            Intent r = new Intent(CreateNote.this, NotesList.class);
+                            r.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            CreateNote.this.startActivity(r);
                         } else {
                             finish();
                         }

@@ -1,13 +1,15 @@
 package cpe365.mynotes;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,20 +43,32 @@ public class NoteView extends AppCompatActivity {
         final RetrieveNoteTask getNote = new RetrieveNoteTask(noteId);
         getNote.execute((Void) null);
 
-        FloatingActionButton delete = (FloatingActionButton) findViewById(R.id.delete);
+        Button delete = (Button)findViewById(R.id.delete);
         assert delete != null;
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mDelete == null) {
-                    mDelete = new DeleteNote(noteId);
-                    mDelete.execute((Void) null);
-                    finish();
-                    startActivity(new Intent(NoteView.this, NotesList.class));
-                }
+                AlertDialog.Builder deleteNote = new AlertDialog.Builder(NoteView.this);
+                deleteNote.setMessage(R.string.delete)
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                if (mDelete == null) {
+                                    mDelete = new DeleteNote(noteId);
+                                    mDelete.execute((Void) null);
+                                    finish();
+                                    startActivity(new Intent(NoteView.this, NotesList.class));
+                                }
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                // User cancelled the dialog
+                            }
+                        });
+                deleteNote.show();
             }
         });
-        FloatingActionButton edit = (FloatingActionButton) findViewById(R.id.edit);
+        Button edit = (Button) findViewById(R.id.edit);
         assert edit != null;
         edit.setOnClickListener(new View.OnClickListener() {
             @Override

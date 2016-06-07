@@ -74,6 +74,10 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    public void onBackPressed() {
+        System.exit(1);
+    }
+
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid username, missing fields, etc.), the
@@ -151,7 +155,7 @@ public class LoginActivity extends AppCompatActivity {
         UserLoginTask(String username, String password) throws Exception {
             mUsername = username;
 
-            byte[] bytesOfMessage = (password + username).getBytes("UTF-8");
+            byte[] bytesOfMessage = (password + username.toLowerCase() ).getBytes("UTF-8");
             MessageDigest md = MessageDigest.getInstance("MD5");
 
             byte[] bytes = md.digest(bytesOfMessage);
