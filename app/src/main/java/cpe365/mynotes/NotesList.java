@@ -54,7 +54,6 @@ public class NotesList extends AppCompatActivity {
                 public void onClick(View view) {
                     finish();
                     Intent notes = new Intent(NotesList.this, CreateNote.class);
-                    finish();
                     NotesList.this.startActivity(notes);
                 }
             });
@@ -67,7 +66,6 @@ public class NotesList extends AppCompatActivity {
             public boolean onQueryTextSubmit(String query) {
                 Intent search = new Intent(NotesList.this, SearchNotes.class);
                 search.putExtra("search", query);
-                finish();
                 startActivity(search);
                 return true;
             }

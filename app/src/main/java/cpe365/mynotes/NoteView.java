@@ -128,16 +128,27 @@ public class NoteView extends AppCompatActivity {
                 JSONArray j = new JSONArray(json);
                 note = new JSONObject(j.getString(0));
 
+                urlConnection.disconnect();
+                return true;
+
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
 
             if (urlConnection != null) urlConnection.disconnect();
 
-            return true;
+            return false;
         }
 
         protected void onPostExecute(final Boolean success) {
+            if (!success) {
+                Toast toast = Toast.makeText(NoteView.this, R.string.fail, Toast.LENGTH_LONG);
+                toast.show();
+                finish();
+                NoteView.this.startActivity(new Intent(NoteView.this,NotesList.class));
+                return;
+            }
+            setTitle(mNoteTitle);
             TextView title = (TextView) findViewById(R.id.title);
             TextView noteText = (TextView) findViewById(R.id.noteText);
 

@@ -57,8 +57,10 @@ public class CreateNote extends AppCompatActivity {
                     if (mTitle.getText().toString().length() == 0) {
                         mTitle.setError(getString(R.string.no_title));
                         mTitle.requestFocus();
-                    }
-                    else if (!isGoodTag(mNote.getText().toString())) {
+                    } else if (mTitle.getText().toString().length() > 64) {
+                        mTitle.setError(getString(R.string.long_title));
+                        mTitle.requestFocus();
+                    } else if (!isGoodTag(mNote.getText().toString())) {
                         mNote.setError(getString(R.string.tag_too_long));
                         mNote.requestFocus();
                     }
@@ -67,9 +69,6 @@ public class CreateNote extends AppCompatActivity {
                             mSaveNote = new SaveNoteTask(mTitle.getText().toString(), mNote.getText().toString(), modify, noteId);
                             mSaveNote.execute((Void) null);
                         }
-                        finish();
-                        Intent notes = new Intent(CreateNote.this, NotesList.class);
-                        CreateNote.this.startActivity(notes);
                     }
                 }
             });
@@ -194,6 +193,10 @@ public class CreateNote extends AppCompatActivity {
             } else {
                 Toast toast = Toast.makeText(CreateNote.this, R.string.saved, Toast.LENGTH_LONG);
                 toast.show();
+
+                CreateNote.this.finish();
+                Intent notes = new Intent(CreateNote.this, NotesList.class);
+                CreateNote.this.startActivity(notes);
             }
         }
 

@@ -1,5 +1,6 @@
 package cpe365.mynotes;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -38,9 +39,16 @@ public class SearchNotes extends AppCompatActivity {
 
         String search = getIntent().getStringExtra("search");
 
-        setTitle("Search: " + search);
+        setTitle("Search: \"" + search + "\"");
 
         new SearchNotesTask(search).execute();
+
+        ActionBar actionBar = getActionBar();
+        if (actionBar != null) {
+            actionBar.setHomeButtonEnabled(false); // disable the button
+            actionBar.setDisplayHomeAsUpEnabled(false); // remove the left caret
+            actionBar.setDisplayShowHomeEnabled(false); // remove the icon
+        }
 
     }
 
