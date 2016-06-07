@@ -8,12 +8,15 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -153,16 +156,13 @@ public class NotesList extends AppCompatActivity {
         }
 
         protected void onPostExecute(final Boolean success) {
-            if (notesList == null) {
-                return;
-            }
-
             if (!success) {
                 Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG).show();
                 return;
             }
 
             ListView notes = (ListView) findViewById(R.id.notesList);
+            assert(notes != null);
 
             String[] titles = new String[notesList.length()];
             String[] tags = new String[notesList.length()];
@@ -203,48 +203,65 @@ public class NotesList extends AppCompatActivity {
                     return view;
                 }
             };
-            if(notes != null) {
-                notes.setClickable(true);
-                notes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView parentView, View childView, int position, long id) {
-                        Intent viewNote = new Intent(NotesList.this, NoteView.class);
-                        viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
-                        viewNote.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        finish();
-                        startActivity(viewNote);
-                    }
-                });
+            notes.setClickable(true);
+            notes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView parentView, View childView, int position, long id) {
+                    Intent viewNote = new Intent(NotesList.this, NoteView.class);
+                    viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
+                    viewNote.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    finish();
+                    startActivity(viewNote);
+                }
+            });
 
-                notes.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                    public boolean onItemLongClick(AdapterView parentView, View childView, int position, long id) {
-                        final int fPosition = position;
-                        AlertDialog.Builder deleteNote = new AlertDialog.Builder(NotesList.this);
-                        deleteNote.setMessage(R.string.delete)
-                                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        try {
-                                            if (mDelete == null) {
-                                                mDelete = new DeleteNote(Integer.toString(finalIds[fPosition]));
-                                                mDelete.execute((Void) null);
-                                            }
-                                        } catch (Exception e) {
-                                            Toast toast = Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG);
-                                            toast.show();
+            notes.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                public boolean onItemLongClick(AdapterView parentView, View childView, int position, long id) {
+                    final int fPosition = position;
+                    AlertDialog.Builder deleteNote = new AlertDialog.Builder(NotesList.this);
+                    deleteNote.setMessage(R.string.delete)
+                            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    try {
+                                        if (mDelete == null) {
+                                            mDelete = new DeleteNote(Integer.toString(finalIds[fPosition]));
+                                            mDelete.execute((Void) null);
                                         }
+                                    } catch (Exception e) {
+                                        Toast toast = Toast.makeText(NotesList.this, R.string.fail, Toast.LENGTH_LONG);
+                                        toast.show();
                                     }
-                                })
-                                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog, int id) {
-                                        // User cancelled the dialog
-                                    }
-                                });
-                        deleteNote.show();
+                                }
+                            })
+                            .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    // User cancelled the dialog
+                                }
+                            });
+                    deleteNote.show();
 
-                        return true;
-                    }
-                });
+                    return true;
+                }
+            });
 
-                notes.setAdapter(listAdapter);
+            notes.setAdapter(listAdapter);
+
+            if (notesList.length() == 0) {
+                RelativeLayout mainLayout = (RelativeLayout) findViewById(R.id.lay);
+                assert(mainLayout != null);
+                TextView textView = new TextView(NotesList.this);
+                textView.setGravity(Gravity.CENTER);
+                textView.setTextSize(25);
+
+                textView.setText(R.string.no_notes);
+                RelativeLayout.LayoutParams params =
+                        new RelativeLayout.LayoutParams(
+                                LinearLayoutCompat.LayoutParams.WRAP_CONTENT,
+                                LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                params.addRule(RelativeLayout.CENTER_IN_PARENT);
+
+                textView.setLayoutParams(params);
+                mainLayout.addView(textView);
             }
         }
     }

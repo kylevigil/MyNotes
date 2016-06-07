@@ -6,11 +6,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -165,19 +167,33 @@ public class SearchNotes extends AppCompatActivity {
                     return view;
                 }
             };
-            if(notes != null) {
-                notes.setClickable(true);
-                notes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView parentView, View childView, int position, long id) {
-                        Intent viewNote = new Intent(SearchNotes.this, NoteView.class);
-                        viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
-                        viewNote.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        finish();
-                        startActivity(viewNote);
-                    }
-                });
+            assert(notes != null);
+            notes.setClickable(true);
+            notes.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView parentView, View childView, int position, long id) {
+                    Intent viewNote = new Intent(SearchNotes.this, NoteView.class);
+                    viewNote.putExtra("noteId", Integer.toString(finalIds[position]));
+                    viewNote.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    finish();
+                    startActivity(viewNote);
+                }
+            });
 
-                notes.setAdapter(listAdapter);
+            notes.setAdapter(listAdapter);
+
+            if (notesList.length() == 0) {
+                RelativeLayout mainLayout = (RelativeLayout) findViewById(R.id.searchLay);
+                assert(mainLayout != null);
+                TextView textView = new TextView(SearchNotes.this);
+                textView.setTextSize(15);
+
+                textView.setText(R.string.empty_search);
+                RelativeLayout.LayoutParams params =
+                        new RelativeLayout.LayoutParams(
+                                LinearLayoutCompat.LayoutParams.WRAP_CONTENT,
+                                LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+                textView.setLayoutParams(params);
+                mainLayout.addView(textView);
             }
         }
     }

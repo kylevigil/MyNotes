@@ -7,7 +7,8 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="cpe365.mynotes.SearchNotes">
+    tools:context="cpe365.mynotes.SearchNotes"
+    android:id="@+id/searchLay">
 
     <ListView
         android:layout_width="wrap_content"

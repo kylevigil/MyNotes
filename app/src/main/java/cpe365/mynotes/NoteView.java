@@ -157,7 +157,7 @@ public class NoteView extends AppCompatActivity {
 
         protected void onPostExecute(final Boolean success) {
             if (!success) {
-                Toast toast = Toast.makeText(NoteView.this, R.string.fail, Toast.LENGTH_LONG);
+                Toast toast = Toast.makeText(NoteView.this, R.string.note_gone, Toast.LENGTH_LONG);
                 toast.show();
                 finish();
                 NoteView.this.startActivity(new Intent(NoteView.this,NotesList.class));

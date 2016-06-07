@@ -10,7 +10,8 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="cpe365.mynotes.NotesList"
-    tools:showIn="@layout/activity_notes_list">
+    tools:showIn="@layout/activity_notes_list"
+    android:id="@+id/lay">
 
     <ListView
         android:layout_width="wrap_content"
